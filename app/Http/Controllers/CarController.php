@@ -130,4 +130,32 @@ class CarController extends Controller
 
         return response()->json($data, 200);
     }
+
+    public function destroy(Request $req, $id) {
+        $hash = $req->header('Authorization', null);
+        $jwtAuth = new JwtAuth();
+        $checkToken = $jwtAuth->checkToken($hash);
+
+        if($checkToken) {
+
+            $car = Car::find($id);
+            $car->delete();
+
+            $data = array(
+                'status' => 'success',
+                'message' => 'Car removed',
+                'code' => 200,
+                'car' => $car
+            );
+        } else {
+            $data = array(
+                'status' => 'error',
+                'code' => 300,
+                'message' => 'Missing Authorization'
+            );
+        }
+
+        return response()->json($data, 200);
+
+    }
 }
