@@ -23,6 +23,16 @@ class CarController extends Controller
         
     }
 
+    public function show($id) {
+        $car = Car::find($id)->load('user');
+
+        return response()->json(array(
+            'status' => 'success',
+            'cars' => $car
+        ), 200);
+        
+    }
+
     public function store(Request $req) {
         $hash = $req->header('Authorization', null);
         $jwtAuth = new JwtAuth();
