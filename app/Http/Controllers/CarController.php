@@ -28,7 +28,7 @@ class CarController extends Controller
 
         return response()->json(array(
             'status' => 'success',
-            'cars' => $car
+            'cars' => $car()->load('user')
         ), 200);
         
     }
@@ -39,7 +39,7 @@ class CarController extends Controller
         $checkToken = $jwtAuth->checkToken($hash);
 
         if($checkToken) {
-            $json = $req->input('json');
+            $json = $req->input('json', null);
             $params = json_decode($json);
             $params_array = json_decode($json, true);
             //user authenticated
@@ -76,7 +76,55 @@ class CarController extends Controller
             $data = array(
                 'status' => 'error',
                 'code' => 300,
-                'message' => 'login failed'
+                'message' => 'Missing Authorization'
+            );
+        }
+
+        return response()->json($data, 200);
+    }
+
+    public function update(Request $req, $id) {
+        $hash = $req->header('Authorization', null);
+        $jwtAuth = new JwtAuth();
+        $checkToken = $jwtAuth->checkToken($hash);
+
+        if($checkToken) { // Update car
+
+            $json = $req->input('json', null);
+            $params = json_decode($json);
+            $params_array = json_decode($json, true);
+
+            //user authenticated
+            $user = $jwtAuth->checkToken($hash, true);
+
+            $valid = Validator::make($params_array, [
+ 
+                'title'=>'required|min:5',
+                'description'=>'required',
+                'price'=>'required',
+                'status'=>'required',
+            ]
+            );
+     
+            if($valid -> fails()){
+                return response()->json($valid->errors(), 400);
+            }
+
+            // update
+
+            $car = Car::where('id', $id)->update($params_array);
+
+            $data = array(
+                'status' => 'success',
+                'message' => 'Car updated',
+                'code' => 200,
+                'car' => $params_array
+            );
+        } else {
+            $data = array(
+                'status' => 'error',
+                'code' => 300,
+                'message' => 'Missing Authorization'
             );
         }
 
