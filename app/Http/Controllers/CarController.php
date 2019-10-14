@@ -14,16 +14,12 @@ use App\Http\Requests;
 class CarController extends Controller
 {
     public function index(Request $req) {
+        $cars = Car::all()->load('user');
 
-        $hash = $req->header('Authorization', null);
-        $jwtAuth = new JwtAuth();
-        $checkToken = $jwtAuth->checkToken($hash);
-
-        if($checkToken) {
-            echo "Authenticated";
-        } else {
-            echo "Not authenticated";
-        }
+        return response()->json(array(
+            'status' => 'success',
+            'cars' => $cars
+        ), 200);
         
     }
 
