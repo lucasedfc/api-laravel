@@ -120,6 +120,10 @@ class CarController extends Controller
             }
 
             // update
+            unset($params_array['id']);
+            unset($params_array['user_id']);
+            unset($params_array['created_at']);
+            unset($params_array['user']);
 
             $car = Car::where('id', $id)->update($params_array);
 
