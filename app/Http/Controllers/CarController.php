@@ -131,7 +131,7 @@ class CarController extends Controller
                 'status' => 'success',
                 'message' => 'Car updated',
                 'code' => 200,
-                'car' => $params_array
+                'car' => $params
             );
         } else {
             $data = array(
